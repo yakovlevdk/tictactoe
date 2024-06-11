@@ -1,0 +1,40 @@
+.board {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-gap: 10px;
+	max-width: 300px;
+	margin: 0 auto;
+	background-color: #202020;
+	border-radius: 10px;
+	box-shadow:
+		0 4px 6px rgba(0, 0, 0, 0.1),
+		0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.cell {
+	background-color: #282828;
+	color: #fff;
+	padding: 30px;
+	font-size: 24px;
+	cursor: pointer;
+	transition:
+		background-color 0.3s ease,
+		color 0.3s ease;
+	border-radius: 10px;
+}
+
+.cell:hover {
+	background-color: #404040;
+}
+
+.x {
+	color: #ffd700; /* Цвет для крестиков */
+	font-size: 20px;
+	font-weight: bold;
+}
+
+.o {
+	color: #00ced1; /* Цвет для ноликов */
+	font-size: 20px;
+	font-weight: bold;
+}

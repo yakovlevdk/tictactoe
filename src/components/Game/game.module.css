@@ -1,0 +1,27 @@
+body {
+	font-family: 'Montserrat', sans-serif;
+	text-align: center;
+	background: linear-gradient(to right, #1a1a1a, #000000);
+	color: #fff;
+	margin: 0;
+	padding: 0;
+}
+
+h1 {
+	color: #fff;
+	margin-top: 20px;
+}
+
+.restart-btn {
+	background: #333333;
+	color: white;
+	padding: 10px 20px;
+	border: none;
+	cursor: pointer;
+	margin-top: 20px;
+	border-radius: 5px;
+}
+
+.restart-btn:hover {
+	background: #555555;
+}
