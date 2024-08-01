@@ -1,43 +1,65 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FieldContainer } from './Field/Field';
 import { InformationContainer } from './Information/Information';
 import styles from './game.module.css';
+import { store } from '../../store';
 
 export const Game = () => {
-	const [currentPlayer, setCurrentPlayer] = useState('X');
-	const [isGameEnded, setIsGameEnded] = useState(false);
-	const [isDraw, setIsDraw] = useState(false);
-	const [field, setField] = useState(['', '', '', '', '', '', '', '', '']);
+	const [state, setState] = useState(store.getState());
+
+	useEffect(() => {
+		const unsubscribe = store.subscribe(() => {
+			setState(store.getState());
+		});
+
+		return () => {
+			unsubscribe();
+		};
+	}, []);
 
 	const handleRestartClick = () => {
-		setCurrentPlayer('X');
-		setIsGameEnded(false);
-		setIsDraw(false);
-		setField(['', '', '', '', '', '', '', '', '']);
+		if (state.field) {
+			store.dispatch({ type: 'SET_CURRENT_PLAYER', payload: 'X' });
+			store.dispatch({ type: 'SET_GAME_ENDED', payload: false });
+			store.dispatch({ type: 'SET_DRAW', payload: false });
+			store.dispatch({
+				type: 'SET_FIELD',
+				payload: ['', '', '', '', '', '', '', '', ''],
+			});
+		}
 	};
+
 	return (
 		<>
 			<FieldContainer
-				field={field}
-				setField={setField}
-				currentPlayer={currentPlayer}
-				setCurrentPlayer={setCurrentPlayer}
-				isGameEnded={isGameEnded}
-				setIsGameEnded={setIsGameEnded}
-				isDraw={isDraw}
-				setIsDraw={setIsDraw}
+				field={state.field}
+				setField={(field) =>
+					store.dispatch({ type: 'SET_FIELD', payload: field })
+				}
+				currentPlayer={state.currentPlayer}
+				setCurrentPlayer={(player) =>
+					store.dispatch({
+						type: 'SET_CURRENT_PLAYER',
+						payload: player,
+					})
+				}
+				isGameEnded={state.isGameEnded}
+				setIsGameEnded={(isEnded) =>
+					store.dispatch({ type: 'SET_GAME_ENDED', payload: isEnded })
+				}
+				isDraw={state.isDraw}
+				setIsDraw={(isDraw) =>
+					store.dispatch({ type: 'SET_DRAW', payload: isDraw })
+				}
 			/>
 			<InformationContainer
-				isDraw={isDraw}
-				setIsDraw={setIsDraw}
-				isGameEnded={isGameEnded}
-				setIsGameEnded={setIsGameEnded}
-				currentPlayer={currentPlayer}
-				setCurrentPlayer={setCurrentPlayer}
+				isDraw={state.isDraw}
+				currentPlayer={state.currentPlayer}
+				isGameEnded={state.isGameEnded}
 			/>
 			<button
 				className={styles['restart-btn']}
-				onClick={() => handleRestartClick()}
+				onClick={handleRestartClick}
 			>
 				Начать заново
 			</button>

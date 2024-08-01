@@ -1,5 +1,5 @@
+import React from 'react';
 import styles from './field.module.css';
-import PropTypes from 'prop-types';
 
 export const FieldContainer = ({
 	field,
@@ -8,7 +8,6 @@ export const FieldContainer = ({
 	setCurrentPlayer,
 	isGameEnded,
 	setIsGameEnded,
-	isDraw,
 	setIsDraw,
 }) => {
 	const WIN_PATTERNS = [
@@ -21,77 +20,51 @@ export const FieldContainer = ({
 		[0, 4, 8],
 		[2, 4, 6], // Варианты побед по диагонали
 	];
-	const handleClickItem = (item, index, array) => {
-		if (item === '' && !isGameEnded) {
-			array[index] = currentPlayer;
-		}
-		for (const combination of WIN_PATTERNS) {
-			if (
-				field[combination[0]] === field[combination[1]] &&
-				field[combination[1]] === field[combination[2]] &&
-				field[combination[0]] !== ''
-			) {
-				setIsGameEnded(true);
-				setCurrentPlayer(field[combination[0]]);
-				return;
+
+	const handleClickItem = (index) => {
+		if (field[index] === '' && !isGameEnded) {
+			const newField = [...field];
+			newField[index] = currentPlayer;
+			setField(newField);
+
+			for (const combination of WIN_PATTERNS) {
+				if (
+					newField[combination[0]] === newField[combination[1]] &&
+					newField[combination[1]] === newField[combination[2]] &&
+					newField[combination[0]] !== ''
+				) {
+					setIsGameEnded(true);
+					setCurrentPlayer(newField[combination[0]]);
+					return;
+				}
 			}
-		}
-		if (!array.includes('') && !isGameEnded) {
-			return setIsDraw(true);
-		}
-		if (!isGameEnded && array.includes('')) {
-			return setCurrentPlayer(() => (currentPlayer === 'X' ? '0' : 'X'));
+
+			if (!newField.includes('') && !isGameEnded) {
+				setIsDraw(true);
+			} else if (!isGameEnded && newField.includes('')) {
+				setCurrentPlayer(currentPlayer === 'X' ? 'O' : 'X');
+			}
 		}
 	};
 
-	return (
-		<FieldLayout
-			field={field}
-			setField={setField}
-			currentPlayer={currentPlayer}
-			setCurrentPlayer={setCurrentPlayer}
-			isGameEnded={isGameEnded}
-			setIsGameEnded={setIsGameEnded}
-			isDraw={isDraw}
-			setIsDraw={setIsDraw}
-			handleClickItem={handleClickItem}
-		/>
-	);
+	return <FieldLayout field={field} handleClickItem={handleClickItem} />;
 };
-export const FieldLayout = ({
-	field,
-	setField,
-	currentPlayer,
-	setCurrentPlayer,
-	isGameEnded,
-	setIsGameEnded,
-	isDraw,
-	setIsDraw,
-	handleClickItem,
-}) => {
-	const createField = field.map((item, index, array) => {
-		return (
-			<div
-				key={index}
-				className={styles.cell}
-				onClick={() => handleClickItem(item, index, array)}
-			>
-				<p className={array[index] === 'X' ? styles['x'] : styles['o']}>
-					{item}
-				</p>
-			</div>
-		);
-	});
 
-	return <div className={styles.board}>{createField}</div>;
-};
-FieldLayout.propTypes = {
-	currentPlayer: PropTypes.string.isRequired,
-	setCurrentPlayer: PropTypes.func.isRequired,
-	isGameEnded: PropTypes.bool.isRequired,
-	setIsGameEnded: PropTypes.func.isRequired,
-	isDraw: PropTypes.bool.isRequired,
-	setIsDraw: PropTypes.func.isRequired,
-	field: PropTypes.arrayOf(PropTypes.string).isRequired,
-	setField: PropTypes.func.isRequired,
+// FieldLayout.js
+export const FieldLayout = ({ field, handleClickItem }) => {
+	return (
+		<div className={styles.board}>
+			{field.map((item, index) => (
+				<div
+					key={index}
+					className={styles.cell}
+					onClick={() => handleClickItem(index)}
+				>
+					<p className={item === 'X' ? styles['x'] : styles['o']}>
+						{item}
+					</p>
+				</div>
+			))}
+		</div>
+	);
 };
