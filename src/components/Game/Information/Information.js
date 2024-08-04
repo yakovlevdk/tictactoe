@@ -1,18 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './information.module.css';
+import { store } from '../../../store';
 
-export const InformationContainer = ({
-	isDraw,
-	isGameEnded,
-	currentPlayer,
-}) => {
+export const InformationContainer = () => {
+	const [state, setState] = useState(store.getState());
+
+	useEffect(() => {
+		const unsubscribe = store.subscribe(() => {
+			setState(store.getState());
+		});
+
+		return () => {
+			unsubscribe();
+		};
+	}, []);
+
 	const information = () => {
-		if (isDraw) {
+		if (state.isDraw) {
 			return 'Ничья';
-		} else if (!isDraw && isGameEnded) {
-			return `Победа: ${currentPlayer}`;
+		} else if (!state.isDraw && state.isGameEnded) {
+			return `Победа: ${state.currentPlayer}`;
 		} else {
-			return `Ходит: ${currentPlayer}`;
+			return `Ходит: ${state.currentPlayer}`;
 		}
 	};
 

@@ -1,15 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './field.module.css';
+import { store } from '../../../store';
 
-export const FieldContainer = ({
-	field,
-	setField,
-	currentPlayer,
-	setCurrentPlayer,
-	isGameEnded,
-	setIsGameEnded,
-	setIsDraw,
-}) => {
+export const FieldContainer = () => {
+	const [state, setState] = useState(store.getState());
+
+	useEffect(() => {
+		const unsubscribe = store.subscribe(() => {
+			setState(store.getState());
+		});
+
+		return () => {
+			unsubscribe();
+		};
+	}, []);
+
 	const WIN_PATTERNS = [
 		[0, 1, 2],
 		[3, 4, 5],
@@ -22,10 +27,10 @@ export const FieldContainer = ({
 	];
 
 	const handleClickItem = (index) => {
-		if (field[index] === '' && !isGameEnded) {
-			const newField = [...field];
-			newField[index] = currentPlayer;
-			setField(newField);
+		if (state.field[index] === '' && !state.isGameEnded) {
+			const newField = [...state.field];
+			newField[index] = state.currentPlayer;
+			store.dispatch({ type: 'SET_FIELD', payload: newField });
 
 			for (const combination of WIN_PATTERNS) {
 				if (
@@ -33,21 +38,29 @@ export const FieldContainer = ({
 					newField[combination[1]] === newField[combination[2]] &&
 					newField[combination[0]] !== ''
 				) {
-					setIsGameEnded(true);
-					setCurrentPlayer(newField[combination[0]]);
+					store.dispatch({ type: 'SET_GAME_ENDED', payload: true });
+					store.dispatch({
+						type: 'SET_CURRENT_PLAYER',
+						payload: newField[combination[0]],
+					});
 					return;
 				}
 			}
 
-			if (!newField.includes('') && !isGameEnded) {
-				setIsDraw(true);
-			} else if (!isGameEnded && newField.includes('')) {
-				setCurrentPlayer(currentPlayer === 'X' ? 'O' : 'X');
+			if (!newField.includes('') && !state.isGameEnded) {
+				store.dispatch({ type: 'SET_DRAW', payload: true });
+			} else if (!state.isGameEnded && newField.includes('')) {
+				store.dispatch({
+					type: 'SET_CURRENT_PLAYER',
+					payload: state.currentPlayer === 'X' ? 'O' : 'X',
+				});
 			}
 		}
 	};
 
-	return <FieldLayout field={field} handleClickItem={handleClickItem} />;
+	return (
+		<FieldLayout field={state.field} handleClickItem={handleClickItem} />
+	);
 };
 
 // FieldLayout.js
