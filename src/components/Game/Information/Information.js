@@ -1,20 +1,6 @@
-import React, { useState, useEffect } from 'react';
 import styles from './information.module.css';
-import { store } from '../../../store';
 
-export const InformationContainer = () => {
-	const [state, setState] = useState(store.getState());
-
-	useEffect(() => {
-		const unsubscribe = store.subscribe(() => {
-			setState(store.getState());
-		});
-
-		return () => {
-			unsubscribe();
-		};
-	}, []);
-
+export const InformationContainer = ({ state }) => {
 	const information = () => {
 		if (state.isDraw) {
 			return 'Ничья';

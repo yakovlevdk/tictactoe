@@ -15,6 +15,8 @@ export const reducer = (state = initialState, action) => {
 			return { ...state, isGameEnded: action.payload };
 		case 'SET_DRAW':
 			return { ...state, isDraw: action.payload };
+		case 'RESET':
+			return initialState;
 		default:
 			return state;
 	}

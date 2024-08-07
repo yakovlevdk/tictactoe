@@ -1,20 +1,7 @@
-import React, { useState, useEffect } from 'react';
 import styles from './field.module.css';
 import { store } from '../../../store';
 
-export const FieldContainer = () => {
-	const [state, setState] = useState(store.getState());
-
-	useEffect(() => {
-		const unsubscribe = store.subscribe(() => {
-			setState(store.getState());
-		});
-
-		return () => {
-			unsubscribe();
-		};
-	}, []);
-
+export const FieldContainer = ({ state }) => {
 	const WIN_PATTERNS = [
 		[0, 1, 2],
 		[3, 4, 5],
