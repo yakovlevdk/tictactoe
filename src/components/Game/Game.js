@@ -1,30 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FieldContainer } from './Field/Field';
 import { InformationContainer } from './Information/Information';
 import styles from './game.module.css';
-import { store } from '../../store';
-import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { reset } from '../../action/reset';
 export const Game = () => {
-	const [state, setState] = useState(store.getState());
-
-	useEffect(() => {
-		const unsubscribe = store.subscribe(() => {
-			setState(store.getState());
-		});
-
-		return () => {
-			unsubscribe();
-		};
-	}, []);
-
+	const dispatch = useDispatch();
 	const handleRestartClick = () => {
-		store.dispatch({ type: 'RESET' });
+		dispatch(reset);
 	};
 
 	return (
 		<>
-			<FieldContainer state={state} />
-			<InformationContainer state={state} />
+			<FieldContainer />
+			<InformationContainer />
 			<button
 				className={styles['restart-btn']}
 				onClick={handleRestartClick}

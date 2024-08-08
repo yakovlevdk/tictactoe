@@ -1,3 +1,4 @@
+
 const initialState = {
 	currentPlayer: 'X',
 	isGameEnded: false,

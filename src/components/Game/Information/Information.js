@@ -1,13 +1,21 @@
+import React from 'react';
 import styles from './information.module.css';
+import { useSelector } from 'react-redux';
+import { isDrawSelector } from '../../../selectors/isDrawSelector';
+import { currentPlayerSelector } from '../../../selectors/currentPlayerSelector';
+import { isGameEndedSelector } from '../../../selectors/isGameEndedSelector';
+export const InformationContainer = () => {
+	const isDraw = useSelector(isDrawSelector);
+	const isGameEnded = useSelector(isGameEndedSelector);
+	const currentPlayer = useSelector(currentPlayerSelector);
 
-export const InformationContainer = ({ state }) => {
 	const information = () => {
-		if (state.isDraw) {
+		if (isDraw) {
 			return 'Ничья';
-		} else if (!state.isDraw && state.isGameEnded) {
-			return `Победа: ${state.currentPlayer}`;
+		} else if (!isDraw && isGameEnded) {
+			return `Победа: ${currentPlayer}`;
 		} else {
-			return `Ходит: ${state.currentPlayer}`;
+			return `Ходит: ${currentPlayer}`;
 		}
 	};
 

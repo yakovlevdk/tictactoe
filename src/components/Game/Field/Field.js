@@ -1,7 +1,20 @@
+import React from 'react';
 import styles from './field.module.css';
-import { store } from '../../../store';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { currentPlayerSelector } from '../../../selectors/currentPlayerSelector';
+import { fieldSelector } from '../../../selectors/fieldSelector';
+import { isGameEndedSelector } from '../../../selectors/isGameEndedSelector';
+import { setField } from '../../../action/setField';
+import { setGameEnded } from '../../../action/setGameEnded';
+import { setCurrentPlayer } from '../../../action/setCurrentPlayer';
+import { setDraw } from '../../../action/setDraw';
+export const FieldContainer = () => {
+	const dispatch = useDispatch();
+	const field = useSelector(fieldSelector);
+	const isGameEnded = useSelector(isGameEndedSelector);
+	const currentPlayer = useSelector(currentPlayerSelector);
 
-export const FieldContainer = ({ state }) => {
 	const WIN_PATTERNS = [
 		[0, 1, 2],
 		[3, 4, 5],
@@ -14,10 +27,10 @@ export const FieldContainer = ({ state }) => {
 	];
 
 	const handleClickItem = (index) => {
-		if (state.field[index] === '' && !state.isGameEnded) {
-			const newField = [...state.field];
-			newField[index] = state.currentPlayer;
-			store.dispatch({ type: 'SET_FIELD', payload: newField });
+		if (field[index] === '' && !isGameEnded) {
+			const newField = [...field];
+			newField[index] = currentPlayer;
+			dispatch(setField(newField));
 
 			for (const combination of WIN_PATTERNS) {
 				if (
@@ -25,32 +38,23 @@ export const FieldContainer = ({ state }) => {
 					newField[combination[1]] === newField[combination[2]] &&
 					newField[combination[0]] !== ''
 				) {
-					store.dispatch({ type: 'SET_GAME_ENDED', payload: true });
-					store.dispatch({
-						type: 'SET_CURRENT_PLAYER',
-						payload: newField[combination[0]],
-					});
+					dispatch(setGameEnded);
+					dispatch(setCurrentPlayer(newField[combination[0]]));
 					return;
 				}
 			}
 
-			if (!newField.includes('') && !state.isGameEnded) {
-				store.dispatch({ type: 'SET_DRAW', payload: true });
-			} else if (!state.isGameEnded && newField.includes('')) {
-				store.dispatch({
-					type: 'SET_CURRENT_PLAYER',
-					payload: state.currentPlayer === 'X' ? 'O' : 'X',
-				});
+			if (!newField.includes('') && !isGameEnded) {
+				dispatch(setDraw);
+			} else if (!isGameEnded && newField.includes('')) {
+				dispatch(setCurrentPlayer(currentPlayer === 'X' ? 'O' : 'X'));
 			}
 		}
 	};
 
-	return (
-		<FieldLayout field={state.field} handleClickItem={handleClickItem} />
-	);
+	return <FieldLayout field={field} handleClickItem={handleClickItem} />;
 };
 
-// FieldLayout.js
 export const FieldLayout = ({ field, handleClickItem }) => {
 	return (
 		<div className={styles.board}>
